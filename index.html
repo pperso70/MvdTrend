@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Contrôle temperature radiateur</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 10;
+            box-sizing: border-box;
+        }
+
+        button {
+            font-size: 18px;
+            margin: 10px;
+            padding: 10px 20px;
+        }
+
+        #data {
+            margin-top: 20px;
+        }
+
+        /* Conteneur pour afficher le graphe et l'image côte à côte */
+        .container {
+            display: flex;
+            /* Utilisation de flexbox */
+            justify-content: center;
+            /* Espacement autour des éléments */
+            align-items: center;
+            /* Alignement vertical centré */
+            // padding: 0;                   /* Pas de padding entre le graphe et l'image */
+            //margin: 0 20px;
+            margin-top: 10px;
+            /* Espacement réduit entre le conteneur et l'élément précédent */
+
+        }
+
+        .chart-container {
+            width: 330px;
+            height: 250px;
+            //margin-left: 25%;
+            margin: 0 20px;
+            border: 1px solid #ccc;
+        }
+
+        .chart-line {
+            fill: none;
+            stroke: #ff0224;
+            stroke-width: 2;
+        }
+
+        .data-points {
+            display: none;
+        }
+
+        .dotted-line {
+            stroke: lightgray; /* Couleur des lignes pointillées */
+            stroke-width: 1;
+            stroke-dasharray: 5, 5; /* Pointillé avec des segments de 5px */
+        }
+
+        .value-text {
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            fill: #333;
+        }
+
+        #cameraImage {
+            width: 330px;
+            /* Taille légèrement ajustée pour réduire l'espace */
+            height: auto;
+            /* L'image garde ses proportions */
+            object-fit: contain;
+            /* Ajuste l'image à l'intérieur du conteneur tout en conservant les proportions */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Ceci est un commentaire -->
+    <h1>Contrôle de la température des radiateurs</h1>
+    <section id="aff_buttons_cam">
+        <button onclick="sendCommand('Down')" id="down" class="gros_bouton"> Down </button>
+        <button onclick="sendCommand('Up')" id="up" class="gros_bouton">Up</button>
+        <button onclick="sendCommand('Excur')" id="excur" class="gros_bouton">Excur</button>
+        <button onclick="sendCommand('Stop')" id="stop" class="gros_bouton">Stop</button>
+        <button onclick="sendCommand('Raz1000')" id="Raz" class="gros_bouton">Raz milieu</button>
+    </section>
+    <button onclick="sendCommand('LED_ON')">Allumer LED</button>
+    <button onclick="sendCommand('LED_OFF')">Éteindre LED</button>
+    <div id="data">
+        <h2 style="display:inline;">Données du systeme</h2>
+        <p style="display:inline;  margin-left: 10px;">mvdch</p>
+        <p>T Cycle: <span id="temps_de_cycle">--</span></p>
+        <p>Position: <span id="position">--</span></p>
+        <p>Température radiateur: <span id="temperature">--</span>°C</p>
+        <p>RSSI: <span id="rssi">--</span>%</p>
+        <p> redemarrage: <span id="redemarrage">--</span></p>
+    </div>
+    <div class="container">
+        <div class="chart-container">
+            <svg id="chart" width="100%" height="100%" viewBox="-50 0 600 250">
+                <g id="grid"></g>
+                <!-- Ceci est un commentaire  <g id="points"></g> -->
+                <g id="points"></g>
+                <g id="lines"></g>
+            </svg>
+        </div>
+        <img id="cameraImage" alt="Image de la caméra">
+    </div>
+    <!-- Points de données cachés -->
+    <div class="data-points">
+        <span id="point1">50</span>
+        <span id="point2">50</span>
+        <span id="point3">50</span>
+        <span id="point4">50</span>
+        <span id="point5">50</span>
+        <span id="point6">50</span>
+        <span id="point7">50</span>
+        <span id="point8">50</span>
+        <span id="point9">50</span>
+        <span id="point10">50</span>
+        <span id="point11">50</span>
+        <span id="point12">50</span>
+        <span id="point13">50</span>
+        <span id="point14">50</span>
+        <span id="point15">50</span>
+        <span id="point16">50</span>
+        <span id="point17">50</span>
+        <span id="point18">50</span>
+        <span id="point19">50</span>
+        <span id="point20">50</span>
+        <span id="point21">50</span>
+        <span id="point22">50</span>
+        <span id="point23">50</span>
+        <span id="point24">50</span>
+        <span id="point25">50</span>
+        <span id="point26">50</span>
+        <span id="point27">50</span>
+        <span id="point28">50</span>
+        <span id="point29">50</span>
+        <span id="point30">50</span>
+        <span id="point31">50</span>
+        <span id="point32">50</span>
+        <span id="point33">50</span>
+        <span id="point34">50</span>
+        <span id="point35">50</span>
+        <span id="point36">50</span>
+        <span id="point37">50</span>
+        <span id="point38">50</span>
+        <span id="point39">50</span>
+        <span id="point40">50</span>
+        <span id="point41">50</span>
+        <span id="point42">50</span>
+        <span id="point43">50</span>
+        <span id="point44">50</span>
+        <span id="point45">50</span>
+        <span id="point46">50</span>
+        <span id="point47">50</span>
+        <span id="point48">50</span>
+        <span id="point49">50</span>
+        <span id="point50">50</span>
+    </div>
+
+    <script>
+
+        let valana1;
+        let socket;
+
+        window.onload = function () {
+            //const socket = new WebSocket('wss://flash-wild-ketchup.glitch.me');
+            //const socket = new WebSocket('wss://mvdch.glitch.me');
+            //socket = new WebSocket('wss://mvdch.glitch.me');
+            socket = new WebSocket('wss://confirmed-careful-objective.glitch.me');
+
+
+            socket.onopen = function (e) {
+                sendCommand('démarre');
+                console.log("Connecté au WebSocket");
+            };
+
+            socket.onmessage = function (event) {
+                if (event.data.length < 2000) {
+                    //if (typeof event.data === 'string') {
+                    //console.log("Données capteurs reçues : ", event.data);
+                    const data = JSON.parse(event.data);
+                    valana1 = data.temperature;
+                    //console.log(valana1);
+
+                    document.getElementById('temps_de_cycle').textContent = data.temps_de_cycle;
+                    document.getElementById('position').textContent = data.position;
+                    document.getElementById('temperature').textContent = data.temperature;
+                    document.getElementById('rssi').textContent = data.rssi;
+                    document.getElementById('redemarrage').textContent = data.restarts;
+
+                    for (let i = 1; i <= maxPoints; i++) {
+                        document.getElementById('point' + i).textContent = data['point' + i];
+                    }
+                    setInterval(updateChart, 1000);
+                } else {
+                    //console.log("Image reçue, taille:", event.data.length, "bytes");
+                    // Créer un Blob à partir des données binaires
+                    const blob = new Blob([event.data], { type: 'image/jpeg' });
+
+                    // Créer une URL pour le Blob
+                    const imageUrl = URL.createObjectURL(blob);
+
+                    // Afficher l'image
+                    document.getElementById('cameraImage').src = imageUrl;
+
+                    // Libérer la mémoire une fois l'image chargée
+                    document.getElementById('cameraImage').onload = function () {
+                        URL.revokeObjectURL(this.src);
+                    }
+                }
+            };
+        };
+
+        function sendCommand(command) {
+            console.log("Envoi de la commande : " + command);
+            const message = JSON.stringify({ command: command });
+            socket.send(message);
+        }
+        //suite
+        const svgElement = document.getElementById('chart');
+        const pointsGroup = document.getElementById('points');
+        const linesGroup = document.getElementById('lines');
+        const maxPoints = 49;
+
+        function getData() {
+            let data = [];
+            for (let i = 1; i <= maxPoints; i++) {
+                const value = parseFloat(document.getElementById('point' + i).textContent);
+                data.push(isNaN(value) ? 0 : value);
+            }
+            return data;
+        }
+
+        function updateChart() {
+            const data = getData();
+            const width = svgElement.width.baseVal.value;
+            const height = svgElement.height.baseVal.value;
+            console.log(height);
+            const maxValue = Math.max(...data, 25);
+            const minValue = Math.min(...data, 30);
+
+            //grille
+            const svgHeight = 400;
+            const svgWidth = 500;
+            const spacing = 100;  // Espacement entre les lignes
+
+            const gridGroup = document.getElementById('grid');
+
+            // Créer les lignes horizontales espacées de 20px
+            //for (let y = spacing; y < svgHeight; y += spacing) {
+            for (let y = 0; y < svgHeight; y += spacing) {
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', 0);
+                line.setAttribute('y1', y);
+                line.setAttribute('x2', svgWidth);
+                line.setAttribute('y2', y);
+                line.setAttribute('class', 'dotted-line'); // Classe pour styliser les lignes pointillées
+                gridGroup.appendChild(line);
+            }
+
+            // Effacer les points, lignes et textes existants
+            pointsGroup.innerHTML = '';
+            linesGroup.innerHTML = '';
+            svgElement.querySelectorAll('.value-text').forEach(el => el.remove());
+
+            // Dessiner les nouveaux points et lignes
+            data.forEach((value, index) => {
+                const x = width - (index / (maxPoints - 1)) * width;
+                const y = height + 50 - ((value - minValue) / (maxValue - minValue)) * (height +50);
+                //const y = height + 50;
+
+                if (index < maxPoints - 1) {
+                    const nextX = width - ((index + 1) / (maxPoints - 1)) * width;
+                    const nextY = height + 50 - ((data[index + 1] - minValue) / (maxValue - minValue)) * (height + 50);
+                    //const nextY =  height + 50;
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', x * 1.5);
+                    line.setAttribute('y1', y);
+                    line.setAttribute('x2', nextX * 1.5);
+                    line.setAttribute('y2', nextY);
+                    line.setAttribute('class', 'chart-line');
+                    linesGroup.appendChild(line);
+                }
+            });
+
+            // Ajouter la valeur maximale
+            const maxText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            maxText.setAttribute('x', 10);
+            maxText.setAttribute('y', 20);
+            maxText.setAttribute('class', 'value-text');
+            maxText.textContent = `Max: ${maxValue.toFixed(1)}`;
+            svgElement.appendChild(maxText);
+
+            // Ajouter la valeur minimale
+            const minText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            minText.setAttribute('x', 10);
+            minText.setAttribute('y', height + 50);
+            //minText.setAttribute('y', 400);
+            minText.setAttribute('class', 'value-text');
+            minText.textContent = `Min: ${minValue.toFixed(1)}`;
+            svgElement.appendChild(minText);
+        }
+        // Mettre à jour le graphique initialement
+        updateChart();
+    </script>
+</body>
+
+</html>
